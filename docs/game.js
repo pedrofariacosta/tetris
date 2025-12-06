@@ -1,8 +1,7 @@
 const canvas = document.getElementById('tetris');
 const context = canvas.getContext('2d');
-let usuarioAtualId = 1; // Começa com 1 (teste), mas vai mudar ao logar
+let usuarioAtualId = 1;
 
-// Aumenta o tamanho de tudo em 20x (cada pixel vira um bloco de 20x20)
 context.scale(30, 30);
 
 // --- 1. DEFINIÇÃO DAS PEÇAS ---
@@ -107,7 +106,7 @@ function desenhar() {
     // Desenha as peças fixas da Arena
     desenharMatriz(arena, {x: 0, y: 0});
 
-    // --- CÁLCULO DA SOMBRA (GHOST PIECE) ---
+    // Cálculo da sombra
     const ghost = {
         pos: { x: jogador.pos.x, y: jogador.pos.y },
         matriz: jogador.matriz,
@@ -123,8 +122,6 @@ function desenhar() {
     // Desenha o Fantasma (passando true para o último parâmetro)
     desenharMatriz(ghost.matriz, ghost.pos, true);
 
-    // --- FIM DO CÁLCULO DA SOMBRA ---
-
     // Desenha a peça real do Jogador
     desenharMatriz(jogador.matriz, jogador.pos);
 }
@@ -136,7 +133,7 @@ function desenharMatriz(matriz, offset, isGhost = false) {
                 const posX = x + offset.x;
                 const posY = y + offset.y;
 
-                // --- ESTILO FANTASMA (Sombra) ---
+                // ESTILO FANTASMA (Sombra)
                 if (isGhost) {
                     context.fillStyle = 'rgba(255, 255, 255, 0.2)'; // Branco transparente
                     context.fillRect(posX, posY, 1, 1);
@@ -146,7 +143,7 @@ function desenharMatriz(matriz, offset, isGhost = false) {
                     return; // Para por aqui se for fantasma
                 }
 
-                // --- ESTILO PEDRA/RUNA (Igual ao print) ---
+                // ESTILO PEDRA/RUNA
                 const corBase = cores[value];
 
                 // 1. Preenchimento Base
@@ -452,6 +449,5 @@ function carregarRanking() {
 
 // Carrega o ranking assim que o jogo abre
 carregarRanking();
-
 jogadorReset();
 update();
