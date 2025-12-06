@@ -35,10 +35,18 @@ canvas {
     border: 4px solid #fff;
     border-radius: 4px;
 
-    background: linear-gradient(to bottom, #2b32b2, #1488cc); /* Céu Azul */
+    /* Céu Azul Claro + Nuvens via CSS Gradients */
+    background-color: #87CEEB; /* Azul Céu Base */
+    background-image:
+            radial-gradient(circle 20px at 20% 20%, rgba(255,255,255,0.6), transparent),
+            radial-gradient(circle 35px at 30% 15%, rgba(255,255,255,0.6), transparent),
+            radial-gradient(circle 25px at 10% 30%, rgba(255,255,255,0.5), transparent),
+            radial-gradient(circle 40px at 80% 40%, rgba(255,255,255,0.4), transparent),
+            radial-gradient(circle 20px at 90% 35%, rgba(255,255,255,0.4), transparent),
+            linear-gradient(to bottom, #87CEEB 0%, #E0F7FA 100%); /* Degradê vertical suave */
 
     display: block;
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
 }
 
 /* Painel Lateral (Score, Ranking, Login) */
