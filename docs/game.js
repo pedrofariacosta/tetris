@@ -267,6 +267,10 @@ function jogadorReset() {
         // Zera a pontuação e atualiza a tela
         jogador.score = 0;
         atualizarPlacar();
+
+        // Reseta o usuário para o padrão (Player 1) após o Game Over
+        usuarioAtualId = 1;
+        alert("Fim de Jogo! O usuário foi deslogado.");
     }
 }
 
