@@ -1,7 +1,11 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@500;700&display=swap');
+
 body {
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    /* Fundo Crepúsculo: Roxo Profundo para Preto */
+    background: radial-gradient(circle at center, #2b1055 0%, #000000 100%);
     color: #fff;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    /* Fonte mais moderna para o corpo */
+    font-family: 'Rajdhani', sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -24,10 +28,28 @@ body {
 }
 
 h1 {
-    margin: 0 0 15px 0;
-    color: #0DC2FF;
+    margin: 0 0 20px 0;
+    font-family: 'Press Start 2P', cursive; /* Fonte Pixelada */
+    font-size: 2rem;
     text-transform: uppercase;
     letter-spacing: 3px;
+
+    /* Título Dourado/Fogo */
+    background: linear-gradient(to right, #FFD700, #FF8C00);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0px 4px 15px rgba(255, 140, 0, 0.4);
+}
+
+/* Títulos dos Cards (Quem está jogando / Top 3) */
+h3 {
+    color: #d1d1d1;
+    font-weight: 700;
+    text-transform: uppercase;
+    border-bottom: 2px solid #FF8C00; /* Linha laranja embaixo */
+    display: inline-block;
+    padding-bottom: 5px;
+    margin-bottom: 15px;
 }
 
 /* AUMENTANDO O TAMANHO DO JOGO AQUI */
@@ -61,50 +83,72 @@ canvas {
 }
 
 .card {
-    background: rgba(255, 255, 255, 0.1);
-    padding: 15px;
-    border-radius: 8px;
+    background: rgba(20, 20, 30, 0.8); /* Fundo bem escuro e levemente transparente */
+    padding: 20px;
+    border-radius: 12px;
     text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.1); /* Borda sutil */
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
 }
 
 .score-text {
-    font-size: 1.2rem;
-    color: #aaa;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.7rem;
+    color: #888;
+    margin-bottom: 10px;
+    display: block;
 }
 
 .score-val {
-    font-size: 2.5rem;
-    font-weight: bold;
-    color: #FF0D72;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 1.8rem;
+    color: #FFD700; /* Ouro */
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
     display: block;
+    margin-top: 10px;
 }
 
 /* Estilo do Input e Botão */
 input {
     width: 90%;
-    padding: 10px;
-    margin-bottom: 10px;
-    border: none;
-    border-radius: 4px;
-    background: #333;
-    color: white;
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 2px solid #444;
+    border-radius: 8px;
+    background: #1a1a1a;
+    color: #fff;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.1rem;
+    text-align: center;
+    outline: none;
+    transition: 0.3s;
+}
+
+input:focus {
+    border-color: #FF8C00;
+    box-shadow: 0 0 10px rgba(255, 140, 0, 0.3);
 }
 
 button {
     width: 100%;
-    padding: 12px;
-    background: #0DFF72; /* Verde Neon */
-    color: #000;
-    font-weight: bold;
+    padding: 15px;
+    /* Botão Laranja Pôr do Sol */
+    background: linear-gradient(45deg, #FF512F 0%, #DD2476 100%);
+    color: #fff;
+    font-family: 'Press Start 2P', cursive; /* Fonte Pixelada no botão */
+    font-size: 0.8rem;
     border: none;
-    border-radius: 4px;
+    border-radius: 8px;
     cursor: pointer;
-    transition: 0.2s;
+    transition: 0.3s;
+    box-shadow: 0 5px 15px rgba(221, 36, 118, 0.4);
+    text-transform: uppercase;
 }
 
 button:hover {
-    background: #00cc55;
-    transform: scale(1.05);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(221, 36, 118, 0.6);
+    filter: brightness(1.2);
 }
 
 /* Lista de Ranking */
