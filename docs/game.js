@@ -1,5 +1,6 @@
 const canvas = document.getElementById('tetris');
 const context = canvas.getContext('2d');
+let usuarioAtualId = 1; // Começa com 1 (teste), mas vai mudar ao logar
 
 // Aumenta o tamanho de tudo em 20x (cada pixel vira um bloco de 20x20)
 context.scale(30, 30);
@@ -294,8 +295,8 @@ function salvarRecorde(pontos) {
 
     const payload = {
         pontuacao: pontos,
-        dataRegistro: new Date().toISOString().split('T')[0], // Pega a data de hoje (AAAA-MM-DD)
-        jogador: { id: 1 } // Associa fixo ao Player 1 que criamos acima
+        dataRegistro: new Date().toISOString().split('T')[0],
+        jogador: { id: usuarioAtualId }
     };
 
     console.log("Enviando pontuação...", payload);
@@ -317,6 +318,39 @@ function salvarRecorde(pontos) {
             }
         })
         .catch(erro => console.error("Erro de conexão:", erro));
+}
+
+function iniciarJogo() {
+    const nomeInput = document.getElementById('username').value;
+
+    if (!nomeInput) {
+        alert("Por favor, digite seu nome!");
+        return;
+    }
+
+    const urlLogin = 'https://tetris-549n.onrender.com/jogadores/arcade';
+
+    fetch(urlLogin, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nome: nomeInput })
+    })
+        .then(response => response.json())
+        .then(jogador => {
+            // Sucesso!
+            usuarioAtualId = jogador.id; // Guarda o ID verdadeiro
+            alert(`Bem-vindo, ${jogador.nomeUsuario}! O jogo vai começar.`);
+
+            // Foca no jogo (tira o foco do input para as setas funcionarem)
+            document.getElementById('tetris').focus();
+
+            // Reseta o jogo
+            jogadorReset();
+        })
+        .catch(erro => {
+            console.error(erro);
+            alert("Erro ao conectar com o servidor.");
+        });
 }
 
 // Nova função para buscar o Top 3
