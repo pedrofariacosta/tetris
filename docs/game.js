@@ -312,6 +312,7 @@ function salvarRecorde(pontos) {
             if (response.ok) {
                 console.log("Pontuação salva com sucesso!");
                 alert("Recorde salvo no banco de dados!");
+                carregarRanking();
             } else {
                 console.error("Erro ao salvar:", response.status);
                 alert("Erro ao salvar pontuação. Veja o console.");
