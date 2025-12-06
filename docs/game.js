@@ -2,7 +2,7 @@ const canvas = document.getElementById('tetris');
 const context = canvas.getContext('2d');
 
 // Aumenta o tamanho de tudo em 20x (cada pixel vira um bloco de 20x20)
-context.scale(20, 20);
+context.scale(30, 30);
 
 // --- 1. DEFINIÇÃO DAS PEÇAS ---
 function criarPeca(tipo) {
@@ -318,6 +318,38 @@ function salvarRecorde(pontos) {
         })
         .catch(erro => console.error("Erro de conexão:", erro));
 }
+
+// Nova função para buscar o Top 3
+function carregarRanking() {
+    // URL do seu backend
+    const urlBackend = 'https://tetris-549n.onrender.com/ranking';
+
+    fetch(urlBackend)
+        .then(response => response.json())
+        .then(data => {
+            // Ordena por pontuação (maior para menor)
+            data.sort((a, b) => b.pontuacao - a.pontuacao);
+
+            // Pega só os 3 primeiros
+            const top3 = data.slice(0, 3);
+
+            const lista = document.getElementById('ranking-list');
+            lista.innerHTML = ''; // Limpa a lista
+
+            top3.forEach(item => {
+                const li = document.createElement('li');
+                // Aqui estamos assumindo que o backend retorna o objeto jogador
+                // Se não retornar nome, vai aparecer "Anônimo"
+                const nome = item.jogador ? item.jogador.nomeUsuario : 'Anônimo';
+                li.innerHTML = `<span>${nome}</span> <span>${item.pontuacao}</span>`;
+                lista.appendChild(li);
+            });
+        })
+        .catch(err => console.error("Erro ao carregar ranking:", err));
+}
+
+// Carrega o ranking assim que o jogo abre
+carregarRanking();
 
 jogadorReset();
 update();
