@@ -193,8 +193,12 @@ function jogadorReset() {
 
     // Se resetar e já bater, é Game Over
     if (colisao(arena, jogador)) {
-        arena.forEach(row => row.fill(0)); // Limpa o jogo
+        // Antes de zerar, salva a pontuação se for maior que 0
+        if (jogador.score > 0) {
+            salvarRecorde(jogador.score);
+        }
 
+        arena.forEach(row => row.fill(0)); // Limpa o jogo
         // Zera a pontuação e atualiza a tela
         jogador.score = 0;
         atualizarPlacar();
@@ -281,6 +285,35 @@ function arenaVarrer() {
 
 function atualizarPlacar() {
     document.getElementById('score').innerText = jogador.score;
+}
+
+// Função que chama o Backend Java
+function salvarRecorde(pontos) {
+    const payload = {
+        pontuacao: pontos,
+        dataRegistro: new Date().toISOString().split('T')[0], // Pega a data de hoje (AAAA-MM-DD)
+        jogador: { id: 1 } // Associa fixo ao Player 1 que criamos acima
+    };
+
+    console.log("Enviando pontuação...", payload);
+
+    fetch('/ranking', { // Endereço do Controller do Kaique
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+    })
+        .then(response => {
+            if (response.ok) {
+                console.log("Pontuação salva com sucesso!");
+                alert("Recorde salvo no banco de dados!");
+            } else {
+                console.error("Erro ao salvar:", response.status);
+                alert("Erro ao salvar pontuação. Veja o console.");
+            }
+        })
+        .catch(erro => console.error("Erro de conexão:", erro));
 }
 
 
