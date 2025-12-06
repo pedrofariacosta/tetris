@@ -32,11 +32,13 @@ h1 {
 
 /* AUMENTANDO O TAMANHO DO JOGO AQUI */
 canvas {
-    border: 4px solid #333;
+    border: 4px solid #fff;
     border-radius: 4px;
-    background-color: #000;
+
+    background: linear-gradient(to bottom, #2b32b2, #1488cc); /* Céu Azul */
+
     display: block;
-    box-shadow: 0 0 15px rgba(13, 194, 255, 0.2);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
 }
 
 /* Painel Lateral (Score, Ranking, Login) */

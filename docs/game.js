@@ -101,9 +101,8 @@ function fundir(arena, jogador) {
 
 // Desenha tudo na tela
 function desenhar() {
-    // Pinta o fundo de preto
-    context.fillStyle = '#000';
-    context.fillRect(0, 0, canvas.width, canvas.height);
+    // Limpa a tela mantendo a transparência (para ver o céu do CSS)
+    context.clearRect(0, 0, canvas.width, canvas.height);
 
     // Desenha as peças fixas da Arena
     desenharMatriz(arena, {x: 0, y: 0});
@@ -115,8 +114,39 @@ function desenharMatriz(matriz, offset) {
     matriz.forEach((row, y) => {
         row.forEach((value, x) => {
             if (value !== 0) {
-                context.fillStyle = cores[value];
-                context.fillRect(x + offset.x, y + offset.y, 1, 1);
+                // Configura a cor base
+                const corBase = cores[value];
+
+                // Posição real no canvas
+                const posX = x + offset.x;
+                const posY = y + offset.y;
+
+                // 1. Preenchimento com leve transparência (Efeito Vidro)
+                context.fillStyle = corBase;
+                // Um pouco transparente para misturar com o céu (opcional, se quiser sólido tire o globalAlpha)
+                context.globalAlpha = 0.9;
+                context.fillRect(posX, posY, 1, 1);
+                context.globalAlpha = 1.0; // Reseta transparência
+
+                // 2. Borda Interna Clara (Brilho superior/esquerdo)
+                context.lineWidth = 0.1; // Borda fina (lembre que a escala é 30x)
+                context.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+                context.strokeRect(posX, posY, 1, 1);
+
+                // 3. Efeito de Brilho no centro (Degradê)
+                // Cria um brilho diagonal
+                const gradiente = context.createLinearGradient(posX, posY, posX + 1, posY + 1);
+                gradiente.addColorStop(0, 'rgba(255, 255, 255, 0.5)'); // Canto superior esquerdo branco
+                gradiente.addColorStop(0.5, 'rgba(255, 255, 255, 0)');   // Meio transparente
+                gradiente.addColorStop(1, 'rgba(0, 0, 0, 0.3)');       // Canto inferior direito escuro
+
+                context.fillStyle = gradiente;
+                context.fillRect(posX, posY, 1, 1);
+
+                // 4. Borda externa escura para separar os blocos
+                context.lineWidth = 0.05;
+                context.strokeStyle = 'rgba(0, 0, 0, 0.5)';
+                context.strokeRect(posX, posY, 1, 1);
             }
         });
     });
