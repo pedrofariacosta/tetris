@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/jogadores")
@@ -38,5 +39,12 @@ public class JogadorController {
     @DeleteMapping("/{id}")
     public void deletar(@PathVariable Long id) {
         service.deletar(id);
+    }
+
+    //endpoint para o jogo chamar: POST /jogadores/arcade
+    @PostMapping("/arcade")
+    public Jogador loginArcade(@RequestBody Map<String, String> payload) {
+        String nome = payload.get("nome");
+        return service.autenticarOuCriar(nome);
     }
 }

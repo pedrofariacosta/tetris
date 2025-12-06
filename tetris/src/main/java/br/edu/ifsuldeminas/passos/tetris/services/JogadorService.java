@@ -33,4 +33,22 @@ public class JogadorService {
     public void deletar(Long id) {
         repository.deleteById(id);
     }
+
+    //método para Login Arcade (Busca ou Cria)
+    public Jogador autenticarOuCriar(String nome) {
+        Optional<Jogador> encontrado = repository.findByNomeUsuario(nome);
+
+        if (encontrado.isPresent()) {
+            return encontrado.get();
+        } else {
+            //se não existe, cria um novo "Jogador Arcade"
+            Jogador novo = new Jogador();
+            novo.setNomeUsuario(nome);
+            //gera dados fictícios para passar na validação @NotBlank
+            novo.setEmail(nome.toLowerCase().replace(" ", "") + "@arcade.com");
+            novo.setSenha("123456");
+
+            return repository.save(novo);
+        }
+    }
 }
