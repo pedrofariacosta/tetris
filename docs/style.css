@@ -1,10 +1,12 @@
+/* ==========================================================================
+   IMPORTAÇÃO DE FONTES E CONFIGURAÇÕES GERAIS
+   ========================================================================== */
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@500;700&display=swap');
 
 body {
     /* Fundo Crepúsculo: Roxo Profundo para Preto */
     background: radial-gradient(circle at center, #2b1055 0%, #000000 100%);
     color: #fff;
-    /* Fonte mais moderna para o corpo */
     font-family: 'Rajdhani', sans-serif;
     display: flex;
     justify-content: center;
@@ -13,18 +15,46 @@ body {
     margin: 0;
 }
 
-/* Ajuste no Container para aceitar 3 colunas */
+h1 {
+    margin: 0 0 20px 0;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 2rem;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+
+    /* Efeito de texto Dourado/Fogo */
+    background: linear-gradient(to right, #FFD700, #FF8C00);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0px 4px 15px rgba(255, 140, 0, 0.4);
+}
+
+h3 {
+    color: #d1d1d1;
+    font-weight: 700;
+    text-transform: uppercase;
+    border-bottom: 2px solid #FF8C00;
+    display: inline-block;
+    padding-bottom: 5px;
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+
+/* ==========================================================================
+   LAYOUT PRINCIPAL (CONTAINER E COLUNAS)
+   ========================================================================== */
 .container {
     display: flex;
     gap: 30px;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.5); /* Vidro escuro */
     padding: 30px;
     border-radius: 15px;
     box-shadow: 0 0 20px rgba(0,0,0,0.5);
-    align-items: flex-start; /* Alinha tudo no topo */
+    align-items: flex-start; /* Alinha painéis no topo */
 }
 
-/* Painel Esquerdo */
+/* Painel Esquerdo (Controles) */
 .left-panel {
     width: 200px;
     display: flex;
@@ -32,17 +62,105 @@ body {
     gap: 20px;
 }
 
-/* Canvas da Próxima Peça */
-#next {
-    background-color: rgba(0, 0, 0, 0.3);
-    border: 2px solid #444;
-    border-radius: 8px;
-    margin: 0 auto; /* Centraliza no card */
-    display: block;
-    box-shadow: inset 0 0 10px rgba(0,0,0,0.5); /* Sombra interna */
+/* Área Central (Jogo) */
+.game-area {
+    text-align: center;
 }
 
-/* ESTILO DAS TECLAS (Visual Arcade) */
+/* Painel Direito (Informações) */
+.sidebar {
+    width: 250px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Ajuste Responsivo para Mobile/Tablet */
+@media (max-width: 900px) {
+    .container { flex-direction: column; align-items: center; }
+    .left-panel, .sidebar { width: 100%; max-width: 360px; }
+    .d-flex { flex-wrap: wrap; }
+}
+
+
+/* ==========================================================================
+   ELEMENTOS DE INTERFACE (CARDS, BOTÕES, INPUTS)
+   ========================================================================== */
+.card {
+    background: rgba(20, 20, 30, 0.8);
+    padding: 15px;
+    border-radius: 12px;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    margin-bottom: 15px;
+}
+
+.score-text {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.7rem;
+    color: #888;
+    margin-bottom: 10px;
+    display: block;
+}
+
+.score-val {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 1.8rem;
+    color: #FFD700;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    display: block;
+    margin-top: 10px;
+}
+
+input {
+    width: 90%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 2px solid #444;
+    border-radius: 8px;
+    background: #1a1a1a;
+    color: #fff;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.1rem;
+    text-align: center;
+    outline: none;
+    transition: 0.3s;
+}
+
+input:focus {
+    border-color: #FF8C00;
+    box-shadow: 0 0 10px rgba(255, 140, 0, 0.3);
+}
+
+button {
+    width: 100%;
+    padding: 15px;
+    /* Botão Degradê Pôr do Sol */
+    background: linear-gradient(45deg, #FF512F 0%, #DD2476 100%);
+    color: #fff;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.8rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+    box-shadow: 0 5px 15px rgba(221, 36, 118, 0.4);
+    text-transform: uppercase;
+}
+
+button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(221, 36, 118, 0.6);
+    filter: brightness(1.2);
+}
+
+
+/* ==========================================================================
+   ESTILOS ESPECÍFICOS (TECLAS, RANKING, CANVAS)
+   ========================================================================== */
+
+/* Teclas Virtuais (Painel Esquerdo) */
 .key-group {
     margin-bottom: 20px;
     text-align: center;
@@ -81,144 +199,7 @@ body {
 }
 
 .key-space {
-    width: 100px; /* Barra de espaço maior */
-}
-
-/* Ajuste responsivo leve (para telas menores não quebrarem) */
-@media (max-width: 900px) {
-    .container { flex-direction: column; align-items: center; }
-    .left-panel, .sidebar { width: 100%; max-width: 360px; }
-    .d-flex { flex-wrap: wrap; }
-}
-
-/* Área do Jogo */
-.game-area {
-    text-align: center;
-}
-
-h1 {
-    margin: 0 0 20px 0;
-    font-family: 'Press Start 2P', cursive; /* Fonte Pixelada */
-    font-size: 2rem;
-    text-transform: uppercase;
-    letter-spacing: 3px;
-
-    /* Título Dourado/Fogo */
-    background: linear-gradient(to right, #FFD700, #FF8C00);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    text-shadow: 0px 4px 15px rgba(255, 140, 0, 0.4);
-}
-
-/* Títulos dos Cards (Quem está jogando / Top 3) */
-h3 {
-    color: #d1d1d1;
-    font-weight: 700;
-    text-transform: uppercase;
-    border-bottom: 2px solid #FF8C00; /* Linha laranja embaixo */
-    display: inline-block;
-    padding-bottom: 5px;
-    margin-top: 0;
-    margin-bottom: 15px;
-}
-
-/* AUMENTANDO O TAMANHO DO JOGO AQUI */
-canvas {
-    border: 4px solid #fff;
-    border-radius: 4px;
-
-    /* CONFIGURAÇÃO DO CÉU PÔR DO SOL */
-    background-color: #FF9966; /* Cor de fundo de segurança */
-    background-image:
-        /* Nuvens (reduzi um pouco a opacidade para ficarem sutis no laranja) */
-            radial-gradient(circle 20px at 20% 20%, rgba(255,255,255,0.4), transparent),
-            radial-gradient(circle 35px at 30% 15%, rgba(255,255,255,0.4), transparent),
-            radial-gradient(circle 25px at 10% 30%, rgba(255,255,255,0.3), transparent),
-            radial-gradient(circle 40px at 80% 40%, rgba(255,255,255,0.3), transparent),
-            radial-gradient(circle 20px at 90% 35%, rgba(255,255,255,0.3), transparent),
-
-                /* O Degradê Principal (Laranja Pêssego -> Laranja Avermelhado) */
-            linear-gradient(to bottom, #FF9966 0%, #FF5E62 100%);
-
-    display: block;
-    box-shadow: 0 0 20px rgba(255, 94, 98, 0.4); /* Brilho externo avermelhado para combinar */
-}
-
-/* Painel Lateral (Score, Ranking, Login) */
-.sidebar {
-    width: 250px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-.card {
-    background: rgba(20, 20, 30, 0.8); /* Fundo bem escuro e levemente transparente */
-    padding: 15px;
-    border-radius: 12px;
-    text-align: center;
-    border: 1px solid rgba(255, 255, 255, 0.1); /* Borda sutil */
-    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-}
-
-.score-text {
-    font-family: 'Press Start 2P', cursive;
-    font-size: 0.7rem;
-    color: #888;
-    margin-bottom: 10px;
-    display: block;
-}
-
-.score-val {
-    font-family: 'Press Start 2P', cursive;
-    font-size: 1.8rem;
-    color: #FFD700; /* Ouro */
-    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
-    display: block;
-    margin-top: 10px;
-}
-
-/* Estilo do Input e Botão */
-input {
-    width: 90%;
-    padding: 12px;
-    margin-bottom: 15px;
-    border: 2px solid #444;
-    border-radius: 8px;
-    background: #1a1a1a;
-    color: #fff;
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 1.1rem;
-    text-align: center;
-    outline: none;
-    transition: 0.3s;
-}
-
-input:focus {
-    border-color: #FF8C00;
-    box-shadow: 0 0 10px rgba(255, 140, 0, 0.3);
-}
-
-button {
-    width: 100%;
-    padding: 15px;
-    /* Botão Laranja Pôr do Sol */
-    background: linear-gradient(45deg, #FF512F 0%, #DD2476 100%);
-    color: #fff;
-    font-family: 'Press Start 2P', cursive; /* Fonte Pixelada no botão */
-    font-size: 0.8rem;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: 0.3s;
-    box-shadow: 0 5px 15px rgba(221, 36, 118, 0.4);
-    text-transform: uppercase;
-}
-
-button:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(221, 36, 118, 0.6);
-    filter: brightness(1.2);
+    width: 100px;
 }
 
 /* Lista de Ranking */
@@ -236,11 +217,43 @@ button:hover {
 }
 
 #ranking-list li span:last-child {
-    color: #FFE138; /* Amarelo */
+    color: #FFE138;
     font-weight: bold;
 }
 
-/* Estilo do Modal (Fundo escuro transparente) */
+/* Canvas da Próxima Peça */
+#next {
+    background-color: rgba(0, 0, 0, 0.3);
+    border: 2px solid #444;
+    border-radius: 8px;
+    margin: 0 auto;
+    display: block;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+}
+
+/* Canvas do Jogo Principal */
+canvas#tetris {
+    border: 4px solid #fff;
+    border-radius: 4px;
+
+    /* Céu Pôr do Sol */
+    background-color: #FF9966;
+    background-image:
+            radial-gradient(circle 20px at 20% 20%, rgba(255,255,255,0.4), transparent),
+            radial-gradient(circle 35px at 30% 15%, rgba(255,255,255,0.4), transparent),
+            radial-gradient(circle 25px at 10% 30%, rgba(255,255,255,0.3), transparent),
+            radial-gradient(circle 40px at 80% 40%, rgba(255,255,255,0.3), transparent),
+            radial-gradient(circle 20px at 90% 35%, rgba(255,255,255,0.3), transparent),
+            linear-gradient(to bottom, #FF9966 0%, #FF5E62 100%);
+
+    display: block;
+    box-shadow: 0 0 20px rgba(255, 94, 98, 0.4);
+}
+
+
+/* ==========================================================================
+   MODAL DE GAME OVER
+   ========================================================================== */
 .modal {
     position: fixed;
     top: 0; left: 0;
@@ -253,13 +266,13 @@ button:hover {
 }
 
 .modal.hidden {
-    display: none; /* Esconde quando não precisa */
+    display: none;
 }
 
 .modal-content {
     background: #1a1a2e;
     padding: 30px;
-    border: 2px solid #FF0D72; /* Borda Rosa */
+    border: 2px solid #FF0D72;
     border-radius: 15px;
     text-align: center;
     box-shadow: 0 0 30px rgba(255, 13, 114, 0.5);
