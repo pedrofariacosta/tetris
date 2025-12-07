@@ -12,6 +12,33 @@
 </head>
 <body>
 <div class="container">
+
+    <div class="left-panel">
+        <div class="card controls-card">
+            <h3>Comandos</h3>
+
+            <div class="key-group">
+                <div class="key-label">Girar</div>
+                <div class="key">W</div>
+                <div class="key">↑</div>
+            </div>
+
+            <div class="key-group">
+                <div class="key-label">Mover / Descer</div>
+                <div class="d-flex">
+                    <div class="key">←</div>
+                    <div class="key">↓</div>
+                    <div class="key">→</div>
+                </div>
+            </div>
+
+            <div class="key-group">
+                <div class="key-label">Drop Rápido</div>
+                <div class="key key-space">ESPAÇO</div>
+            </div>
+        </div>
+    </div>
+
     <div class="game-area">
         <h1>Tetris</h1>
         <canvas id="tetris" width="360" height="600"></canvas>
@@ -24,17 +51,30 @@
         </div>
 
         <div class="card">
-            <h3>Quem está jogando?</h3>
-            <input type="text" id="username" placeholder="Digite seu nome">
+            <h3>Próxima</h3>
+            <canvas id="next" width="80" height="80"></canvas>
+        </div>
+
+        <div class="card">
+            <h3>Quem joga?</h3>
+            <input type="text" id="username" placeholder="Seu nome">
             <button onclick="iniciarJogo()">Novo Jogo</button>
         </div>
 
         <div class="card">
-            <h3>Top 3 Recordes</h3>
+            <h3>Top 3</h3>
             <ul id="ranking-list">
                 <li>Carregando...</li>
             </ul>
         </div>
+    </div>
+</div>
+
+<div id="game-over-modal" class="modal hidden">
+    <div class="modal-content">
+        <h2>FIM DE JOGO!</h2>
+        <p>Sua Pontuação: <span id="final-score">0</span></p>
+        <button onclick="reiniciarPartida()">Tentar Novamente</button>
     </div>
 </div>
 <script src="game.js"></script>

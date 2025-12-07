@@ -13,13 +13,82 @@ body {
     margin: 0;
 }
 
+/* Ajuste no Container para aceitar 3 colunas */
 .container {
     display: flex;
-    gap: 30px; /* Espaço entre o jogo e o painel lateral */
+    gap: 30px;
     background: rgba(0, 0, 0, 0.5);
     padding: 30px;
     border-radius: 15px;
     box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    align-items: flex-start; /* Alinha tudo no topo */
+}
+
+/* Painel Esquerdo */
+.left-panel {
+    width: 200px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Canvas da Próxima Peça */
+#next {
+    background-color: rgba(0, 0, 0, 0.3);
+    border: 2px solid #444;
+    border-radius: 8px;
+    margin: 0 auto; /* Centraliza no card */
+    display: block;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.5); /* Sombra interna */
+}
+
+/* ESTILO DAS TECLAS (Visual Arcade) */
+.key-group {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.key-label {
+    font-size: 0.7rem;
+    color: #FF8C00;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: bold;
+}
+
+.d-flex {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+}
+
+.key {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 35px;
+    height: 35px;
+    background: linear-gradient(to bottom, #333, #222);
+    border: 1px solid #555;
+    border-bottom: 3px solid #111; /* Efeito 3D */
+    border-radius: 6px;
+    color: #fff;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: bold;
+    font-size: 1rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+}
+
+.key-space {
+    width: 100px; /* Barra de espaço maior */
+}
+
+/* Ajuste responsivo leve (para telas menores não quebrarem) */
+@media (max-width: 900px) {
+    .container { flex-direction: column; align-items: center; }
+    .left-panel, .sidebar { width: 100%; max-width: 360px; }
+    .d-flex { flex-wrap: wrap; }
 }
 
 /* Área do Jogo */
@@ -49,6 +118,7 @@ h3 {
     border-bottom: 2px solid #FF8C00; /* Linha laranja embaixo */
     display: inline-block;
     padding-bottom: 5px;
+    margin-top: 0;
     margin-bottom: 15px;
 }
 
@@ -84,7 +154,7 @@ canvas {
 
 .card {
     background: rgba(20, 20, 30, 0.8); /* Fundo bem escuro e levemente transparente */
-    padding: 20px;
+    padding: 15px;
     border-radius: 12px;
     text-align: center;
     border: 1px solid rgba(255, 255, 255, 0.1); /* Borda sutil */
@@ -168,4 +238,46 @@ button:hover {
 #ranking-list li span:last-child {
     color: #FFE138; /* Amarelo */
     font-weight: bold;
+}
+
+/* Estilo do Modal (Fundo escuro transparente) */
+.modal {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+}
+
+.modal.hidden {
+    display: none; /* Esconde quando não precisa */
+}
+
+.modal-content {
+    background: #1a1a2e;
+    padding: 30px;
+    border: 2px solid #FF0D72; /* Borda Rosa */
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 0 30px rgba(255, 13, 114, 0.5);
+    animation: popIn 0.3s ease;
+}
+
+.modal-content h2 {
+    color: #FF0D72;
+    font-family: 'Press Start 2P', cursive;
+    margin-top: 0;
+}
+
+.modal-content p {
+    font-size: 1.5rem;
+    margin: 20px 0;
+}
+
+@keyframes popIn {
+    from { transform: scale(0.5); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
 }

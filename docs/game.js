@@ -1,6 +1,16 @@
 const canvas = document.getElementById('tetris');
 const context = canvas.getContext('2d');
+
+// --- NOVO: Contexto da Próxima Peça ---
+const nextCanvas = document.getElementById('next');
+const nextContext = nextCanvas.getContext('2d');
+// Escala menor para o canvas pequeno (25px por bloco fica bom em 100px)
+nextContext.scale(20, 20);
+// --------------------------------------
+
 let usuarioAtualId = 1;
+// Variável para guardar qual é a próxima peça
+let proximaPecaMatriz = null;
 
 context.scale(30, 30);
 
@@ -98,7 +108,7 @@ function fundir(arena, jogador) {
     });
 }
 
-// Desenha tudo na tela
+// Desenha tudo na tela principal
 function desenhar() {
     // Limpa a tela mantendo a transparência (para ver o céu do CSS)
     context.clearRect(0, 0, canvas.width, canvas.height);
@@ -106,7 +116,7 @@ function desenhar() {
     // Desenha as peças fixas da Arena
     desenharMatriz(arena, {x: 0, y: 0});
 
-    // Cálculo da sombra
+    // Cálculo da sombra (Ghost Piece)
     const ghost = {
         pos: { x: jogador.pos.x, y: jogador.pos.y },
         matriz: jogador.matriz,
@@ -117,7 +127,7 @@ function desenhar() {
     while (!colisao(arena, ghost)) {
         ghost.pos.y++;
     }
-    ghost.pos.y--; // Sobe um passo (pois bateu no passo anterior)
+    ghost.pos.y--; // Sobe um passo
 
     // Desenha o Fantasma (passando true para o último parâmetro)
     desenharMatriz(ghost.matriz, ghost.pos, true);
@@ -140,7 +150,7 @@ function desenharMatriz(matriz, offset, isGhost = false) {
                     context.lineWidth = 0.05;
                     context.strokeStyle = 'rgba(255, 255, 255, 0.5)';
                     context.strokeRect(posX, posY, 1, 1);
-                    return; // Para por aqui se for fantasma
+                    return;
                 }
 
                 // ESTILO PEDRA/RUNA
@@ -150,13 +160,13 @@ function desenharMatriz(matriz, offset, isGhost = false) {
                 context.fillStyle = corBase;
                 context.fillRect(posX, posY, 1, 1);
 
-                // 2. Borda Grossa Escura (Estilo Cartoon/Pedra)
+                // 2. Borda Grossa Escura
                 context.lineWidth = 0.08;
-                context.strokeStyle = '#222'; // Quase preto
+                context.strokeStyle = '#222';
                 context.strokeRect(posX, posY, 1, 1);
 
-                // 3. Efeito de Relevo (Luz e Sombra Interna)
-                // Parte Clara (Topo e Esquerda) - Simula luz batendo
+                // 3. Efeito de Relevo
+                // Luz
                 context.fillStyle = 'rgba(255, 255, 255, 0.4)';
                 context.beginPath();
                 context.moveTo(posX, posY + 1);
@@ -167,7 +177,7 @@ function desenharMatriz(matriz, offset, isGhost = false) {
                 context.lineTo(posX + 0.2, posY + 0.8);
                 context.fill();
 
-                // Parte Escura (Baixo e Direita) - Simula sombra
+                // Sombra
                 context.fillStyle = 'rgba(0, 0, 0, 0.2)';
                 context.beginPath();
                 context.moveTo(posX + 1, posY);
@@ -178,7 +188,7 @@ function desenharMatriz(matriz, offset, isGhost = false) {
                 context.lineTo(posX + 0.8, posY + 0.2);
                 context.fill();
 
-                // 4. Detalhe de "Rachadura" ou Textura no meio
+                // 4. Detalhe de textura
                 context.fillStyle = 'rgba(0, 0, 0, 0.1)';
                 context.fillRect(posX + 0.3, posY + 0.3, 0.4, 0.4);
             }
@@ -191,38 +201,26 @@ function desenharMatriz(matriz, offset, isGhost = false) {
 function jogadorDerrubar() {
     jogador.pos.y++;
     if (colisao(arena, jogador)) {
-        // Se bateu, volta um pra cima
         jogador.pos.y--;
-        // Fixa na arena
         fundir(arena, jogador);
-
-        // Limpa as linhas e atualiza placar
         arenaVarrer();
-
-        // Reseta posição e pega nova peça
         jogadorReset();
     }
     dropCounter = 0;
 }
 
-// --- NOVO: Função Drop Rápido (Hard Drop) ---
+// --- Função Drop Rápido (Hard Drop) ---
 function jogadorDropRapido() {
-    // Loop até colidir
     while (!colisao(arena, jogador)) {
         jogador.pos.y++;
     }
-    // Volta um passo (pois colidiu)
     jogador.pos.y--;
-    // Fixa a peça
     fundir(arena, jogador);
-    // Limpa linhas
     arenaVarrer();
-    // Reinicia com próxima peça
     jogadorReset();
     dropCounter = 0;
 }
 
-// Move para os lados
 function jogadorMover(dir) {
     jogador.pos.x += dir;
     if (colisao(arena, jogador)) {
@@ -230,12 +228,10 @@ function jogadorMover(dir) {
     }
 }
 
-// Rotaciona a peça
 function jogadorRotacionar(dir) {
     const pos = jogador.pos.x;
     let offset = 1;
     rotacionar(jogador.matriz, dir);
-    // Wall kick (se rodar e bater na parede, empurra a peça pro lado)
     while (colisao(arena, jogador)) {
         jogador.pos.x += offset;
         offset = -(offset + (offset > 0 ? 1 : -1));
@@ -268,35 +264,46 @@ function rotacionar(matriz, dir) {
 
 function jogadorReset() {
     const pecas = 'ILJOTSZ';
-    jogador.matriz = criarPeca(pecas[pecas.length * Math.random() | 0]);
-    jogador.pos.y = 0;
-    jogador.pos.x = (arena[0].length / 2 | 0) -
-        (jogador.matriz[0].length / 2 | 0);
 
-    // Se resetar e já bater, é Game Over
+    // --- LÓGICA DA PRÓXIMA PEÇA ---
+    if (proximaPecaMatriz === null) {
+        proximaPecaMatriz = criarPeca(pecas[pecas.length * Math.random() | 0]);
+    }
+    jogador.matriz = proximaPecaMatriz;
+    proximaPecaMatriz = criarPeca(pecas[pecas.length * Math.random() | 0]);
+
+    // Atualiza o desenho no painel lateral
+    desenharProximaNoPainel();
+    // -----------------------------
+
+    jogador.pos.y = 0;
+    jogador.pos.x = (arena[0].length / 2 | 0) - (jogador.matriz[0].length / 2 | 0);
+
+    // --- GAME OVER ---
     if (colisao(arena, jogador)) {
-        // Antes de zerar, salva a pontuação se for maior que 0
+        // 1. Salva o recorde
         if (jogador.score > 0) {
             salvarRecorde(jogador.score);
         }
 
-        arena.forEach(row => row.fill(0)); // Limpa o jogo
-        // Zera a pontuação e atualiza a tela
-        jogador.score = 0;
-        atualizarPlacar();
+        // 2. Atualiza o texto da pontuação no Modal
+        document.getElementById('final-score').innerText = jogador.score;
 
-        // Reseta o usuário visualmente para forçar novo login (ou jogar como anônimo/player1)
-        usuarioAtualId = 1;
-        document.getElementById('username').value = "";
-        alert("Fim de Jogo! Pontuação salva.");
+        // 3. Mostra o Modal (remove a classe hidden)
+        document.getElementById('game-over-modal').classList.remove('hidden');
+
+        // 4. Limpa a arena para parar a colisão, mas NÃO zera o score ainda
+        arena.forEach(row => row.fill(0));
+
+        // (O reset do score e do usuário agora acontece na função reiniciarPartida)
     }
 }
 
-// --- 4. CONTROLE DE TEMPO (GAME LOOP) ---
+// --- 4. CONTROLE DE TEMPO ---
 let dropCounter = 0;
-let dropInterval = 1000; // 1000ms = 1 segundo (Velocidade do jogo)
-
+let dropInterval = 1000;
 let lastTime = 0;
+
 function update(time = 0) {
     const deltaTime = time - lastTime;
     lastTime = time;
@@ -311,8 +318,7 @@ function update(time = 0) {
 }
 
 // --- 5. INICIALIZAÇÃO ---
-const arena = criarMatriz(12, 20); // Tabuleiro de 12 largura x 20 altura
-
+const arena = criarMatriz(12, 20);
 const jogador = {
     pos: {x: 0, y: 0},
     matriz: null,
@@ -327,46 +333,31 @@ document.addEventListener('keydown', event => {
         jogadorMover(1);
     } else if (event.keyCode === 40) { // Seta Baixo
         jogadorDerrubar();
-    } else if (event.keyCode === 81) { // Tecla Q (Gira Esquerda)
+    } else if (event.keyCode === 81) { // Q
         jogadorRotacionar(-1);
-    } else if (event.keyCode === 87) { // Tecla W (Gira Direita)
+    } else if (event.keyCode === 87) { // W
         jogadorRotacionar(1);
-    } else if (event.keyCode === 38) { // Seta Cima (Gira Direita - padrão)
+    } else if (event.keyCode === 38) { // Cima
         jogadorRotacionar(1);
-    } else if (event.keyCode === 32) { // --- NOVO: ESPAÇO (Hard Drop) ---
+    } else if (event.keyCode === 32) { // Espaço (Hard Drop)
         jogadorDropRapido();
     }
 });
 
 function arenaVarrer() {
     let linhasRemovidas = 0;
-
-    // Percorre a arena de baixo para cima
     outer: for (let y = arena.length - 1; y > 0; --y) {
         for (let x = 0; x < arena[y].length; ++x) {
-            // Se encontrar um zero, a linha não está cheia. Pula para a próxima.
             if (arena[y][x] === 0) {
                 continue outer;
             }
         }
-
-        // Se chegou aqui, a linha 'y' está cheia!
-        // 1. Remove a linha cheia (splice) e pega ela limpa (fill(0))
         const row = arena.splice(y, 1)[0].fill(0);
-
-        // 2. Coloca a linha limpa no topo da arena
         arena.unshift(row);
-
-        // 3. Como tudo desceu, precisamos checar o mesmo índice 'y' de novo
         ++y;
-
-        // 4. Conta quantas linhas foram removidas
         linhasRemovidas++;
     }
-
-    // Calcula a pontuação: 10 pontos por linha, com bônus se fizer várias de uma vez
     if (linhasRemovidas > 0) {
-        // Ex: 1 linha = 10pts, 2 linhas = 30pts, 3 linhas = 70pts...
         jogador.score += linhasRemovidas * 10 * linhasRemovidas;
         atualizarPlacar();
     }
@@ -378,9 +369,7 @@ function atualizarPlacar() {
 
 // Função que chama o Backend Java
 function salvarRecorde(pontos) {
-    // URL do seu Backend no Render
     const urlBackend = 'https://tetris-549n.onrender.com/ranking';
-
     const payload = {
         pontuacao: pontos,
         dataRegistro: new Date().toISOString().split('T')[0],
@@ -389,11 +378,9 @@ function salvarRecorde(pontos) {
 
     console.log("Enviando pontuação...", payload);
 
-    fetch(urlBackend, { // Endereço do Controller do Kaique
+    fetch(urlBackend, {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
     })
         .then(response => {
@@ -411,12 +398,10 @@ function salvarRecorde(pontos) {
 
 function iniciarJogo() {
     const nomeInput = document.getElementById('username').value;
-
     if (!nomeInput) {
         alert("Por favor, digite seu nome!");
         return;
     }
-
     const urlLogin = 'https://tetris-549n.onrender.com/jogadores/arcade';
 
     fetch(urlLogin, {
@@ -426,14 +411,9 @@ function iniciarJogo() {
     })
         .then(response => response.json())
         .then(jogador => {
-            // Sucesso!
-            usuarioAtualId = jogador.id; // Guarda o ID verdadeiro
+            usuarioAtualId = jogador.id;
             alert(`Bem-vindo, ${jogador.nomeUsuario}! O jogo vai começar.`);
-
-            // Foca no jogo (tira o foco do input para as setas funcionarem)
             document.getElementById('tetris').focus();
-
-            // Reseta o jogo
             jogadorReset();
         })
         .catch(erro => {
@@ -442,33 +422,63 @@ function iniciarJogo() {
         });
 }
 
-// Nova função para buscar o Top 3
 function carregarRanking() {
-    // URL do seu backend
     const urlBackend = 'https://tetris-549n.onrender.com/ranking';
-
     fetch(urlBackend)
         .then(response => response.json())
         .then(data => {
-            // Ordena por pontuação (maior para menor)
             data.sort((a, b) => b.pontuacao - a.pontuacao);
-
-            // Pega só os 3 primeiros
             const top3 = data.slice(0, 3);
-
             const lista = document.getElementById('ranking-list');
-            lista.innerHTML = ''; // Limpa a lista
-
+            lista.innerHTML = '';
             top3.forEach(item => {
                 const li = document.createElement('li');
-                // Aqui estamos assumindo que o backend retorna o objeto jogador
-                // Se não retornar nome, vai aparecer "Anônimo"
                 const nome = item.jogador ? item.jogador.nomeUsuario : 'Anônimo';
                 li.innerHTML = `<span>${nome}</span> <span>${item.pontuacao}</span>`;
                 lista.appendChild(li);
             });
         })
         .catch(err => console.error("Erro ao carregar ranking:", err));
+}
+
+// --- FUNÇÃO PARA DESENHAR NO PAINEL LATERAL ---
+function desenharProximaNoPainel() {
+    // Limpa o canvas pequeno
+    nextContext.fillStyle = '#1a1a1a'; // Fundo escuro
+    nextContext.fillRect(0, 0, nextCanvas.width, nextCanvas.height);
+
+    if (!proximaPecaMatriz) return;
+
+    // Calcula o centro para desenhar
+    const offsetX = (4 - proximaPecaMatriz[0].length) / 2;
+    const offsetY = (4 - proximaPecaMatriz.length) / 2;
+
+    proximaPecaMatriz.forEach((row, y) => {
+        row.forEach((value, x) => {
+            if (value !== 0) {
+                // Usamos o estilo "Pedra" simplificado para o painel
+                nextContext.fillStyle = cores[value];
+                nextContext.fillRect(x + offsetX, y + offsetY, 1, 1);
+
+                nextContext.lineWidth = 0.1;
+                nextContext.strokeStyle = '#fff';
+                nextContext.strokeRect(x + offsetX, y + offsetY, 1, 1);
+            }
+        });
+    });
+}
+
+function reiniciarPartida() {
+    // Esconde o modal
+    document.getElementById('game-over-modal').classList.add('hidden');
+    // Reseta o jogo
+    arena.forEach(row => row.fill(0));
+    jogador.score = 0;
+    atualizarPlacar();
+    usuarioAtualId = 1; // Reseta usuário se quiser
+    document.getElementById('username').value = "";
+    jogadorReset();
+    update(); // Garante que o loop volte se tiver parado
 }
 
 // Carrega o ranking assim que o jogo abre
