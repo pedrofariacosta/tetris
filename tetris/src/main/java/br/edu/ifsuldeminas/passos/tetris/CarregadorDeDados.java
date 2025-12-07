@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-import java.util.Optional; // <--- ESTA LINHA ESTAVA FALTANDO!
+import java.util.Optional;
 
 @Component
 public class CarregadorDeDados implements CommandLineRunner {
@@ -16,24 +16,15 @@ public class CarregadorDeDados implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        // Tenta achar o ID 1
-        Optional<Jogador> jogadorPadrao = jogadorRepository.findById(1L);
+        // Verifica se já existe algum jogador, se não, cria o Player 1
+        if (jogadorRepository.count() == 0) {
+            Jogador user = new Jogador();
+            user.setNomeUsuario("Player 1");
+            user.setEmail("player1@email.com");
+            user.setSenha("123456"); // Senha fictícia
 
-        if (jogadorPadrao.isPresent()) {
-            // Se já existe, muda o nome para Anônimo
-            Jogador existente = jogadorPadrao.get();
-            existente.setNomeUsuario("Anônimo");
-            existente.setEmail("anonimo@arcade.com");
-            jogadorRepository.save(existente);
-            System.out.println("--- NOME DO ID 1 ATUALIZADO PARA ANÔNIMO ---");
-        } else {
-            // Se não existe, cria do zero
-            Jogador novo = new Jogador();
-            novo.setNomeUsuario("Anônimo");
-            novo.setEmail("anonimo@arcade.com");
-            novo.setSenha("123456");
-            jogadorRepository.save(novo);
-            System.out.println("--- JOGADOR ANÔNIMO CRIADO COM ID 1 ---");
+            jogadorRepository.save(user);
+            System.out.println("--- JOGADOR DE TESTE CRIADO COM ID 1 ---");
         }
     }
 }
