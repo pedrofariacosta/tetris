@@ -251,26 +251,34 @@ function rotacionar(matriz, dir) {
 
 function jogadorReset() {
     const pecas = 'ILJOTSZ';
-    jogador.matriz = criarPeca(pecas[pecas.length * Math.random() | 0]);
-    jogador.pos.y = 0;
-    jogador.pos.x = (arena[0].length / 2 | 0) -
-        (jogador.matriz[0].length / 2 | 0);
 
-    // Se resetar e já bater, é Game Over
+    // Lógica da Próxima Peça
+    if (proximaPecaMatriz === null) {
+        proximaPecaMatriz = criarPeca(pecas[pecas.length * Math.random() | 0]);
+    }
+    jogador.matriz = proximaPecaMatriz;
+    proximaPecaMatriz = criarPeca(pecas[pecas.length * Math.random() | 0]);
+
+    jogador.pos.y = 0;
+    jogador.pos.x = (arena[0].length / 2 | 0) - (jogador.matriz[0].length / 2 | 0);
+
+    // --- GAME OVER ---
     if (colisao(arena, jogador)) {
-        // Antes de zerar, salva a pontuação se for maior que 0
+        // 1. Salva o recorde do usuário atual (antes de deslogar)
         if (jogador.score > 0) {
             salvarRecorde(jogador.score);
         }
 
-        arena.forEach(row => row.fill(0)); // Limpa o jogo
-        // Zera a pontuação e atualiza a tela
+        // 2. Limpa o tabuleiro
+        arena.forEach(row => row.fill(0));
         jogador.score = 0;
         atualizarPlacar();
 
-        // Reseta o usuário para o padrão (Player 1) após o Game Over
-        usuarioAtualId = 1;
-        alert("Fim de Jogo! O usuário foi deslogado.");
+        // --- A CORREÇÃO DE LOGOUT ---
+        usuarioAtualId = 1; // Volta para o Player 1 (Anônimo/Backend)
+        document.getElementById('username').value = ""; // Limpa o campo de texto na tela
+        alert("Fim de Jogo! Pontuação salva e usuário deslogado.");
+        // ----------------------------
     }
 }
 
