@@ -14,15 +14,22 @@ public class CarregadorDeDados implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        // Verifica se já existe algum jogador, se não, cria o Player 1
-        if (jogadorRepository.count() == 0) {
-            Jogador user = new Jogador();
-            user.setNomeUsuario("Player 1");
-            user.setEmail("player1@email.com");
-            user.setSenha("123456"); // Senha fictícia
+        // Tenta achar o ID 1
+        Optional<Jogador> jogadorPadrao = jogadorRepository.findById(1L);
 
-            jogadorRepository.save(user);
-            System.out.println("--- JOGADOR DE TESTE CRIADO COM ID 1 ---");
+        if (jogadorPadrao.isPresent()) {
+            Jogador existente = jogadorPadrao.get();
+            existente.setNomeUsuario("Anônimo");
+            existente.setEmail("anonimo@arcade.com");
+            jogadorRepository.save(existente);
+            System.out.println("--- NOME DO ID 1 ATUALIZADO PARA ANÔNIMO ---");
+        } else {
+            Jogador novo = new Jogador();
+            novo.setNomeUsuario("Anônimo");
+            novo.setEmail("anonimo@arcade.com");
+            novo.setSenha("123456");
+            jogadorRepository.save(novo);
+            System.out.println("--- JOGADOR ANÔNIMO CRIADO COM ID 1 ---");
         }
     }
 }
