@@ -205,6 +205,23 @@ function jogadorDerrubar() {
     dropCounter = 0;
 }
 
+// --- NOVO: Função Drop Rápido (Hard Drop) ---
+function jogadorDropRapido() {
+    // Loop até colidir
+    while (!colisao(arena, jogador)) {
+        jogador.pos.y++;
+    }
+    // Volta um passo (pois colidiu)
+    jogador.pos.y--;
+    // Fixa a peça
+    fundir(arena, jogador);
+    // Limpa linhas
+    arenaVarrer();
+    // Reinicia com próxima peça
+    jogadorReset();
+    dropCounter = 0;
+}
+
 // Move para os lados
 function jogadorMover(dir) {
     jogador.pos.x += dir;
@@ -251,34 +268,27 @@ function rotacionar(matriz, dir) {
 
 function jogadorReset() {
     const pecas = 'ILJOTSZ';
-
-    // Lógica da Próxima Peça
-    if (proximaPecaMatriz === null) {
-        proximaPecaMatriz = criarPeca(pecas[pecas.length * Math.random() | 0]);
-    }
-    jogador.matriz = proximaPecaMatriz;
-    proximaPecaMatriz = criarPeca(pecas[pecas.length * Math.random() | 0]);
-
+    jogador.matriz = criarPeca(pecas[pecas.length * Math.random() | 0]);
     jogador.pos.y = 0;
-    jogador.pos.x = (arena[0].length / 2 | 0) - (jogador.matriz[0].length / 2 | 0);
+    jogador.pos.x = (arena[0].length / 2 | 0) -
+        (jogador.matriz[0].length / 2 | 0);
 
-    // --- GAME OVER ---
+    // Se resetar e já bater, é Game Over
     if (colisao(arena, jogador)) {
-        // 1. Salva o recorde do usuário atual (antes de deslogar)
+        // Antes de zerar, salva a pontuação se for maior que 0
         if (jogador.score > 0) {
             salvarRecorde(jogador.score);
         }
 
-        // 2. Limpa o tabuleiro
-        arena.forEach(row => row.fill(0));
+        arena.forEach(row => row.fill(0)); // Limpa o jogo
+        // Zera a pontuação e atualiza a tela
         jogador.score = 0;
         atualizarPlacar();
 
-        // --- A CORREÇÃO DE LOGOUT ---
-        usuarioAtualId = 1; // Volta para o Player 1 (Anônimo/Backend)
-        document.getElementById('username').value = ""; // Limpa o campo de texto na tela
-        alert("Fim de Jogo! Pontuação salva e usuário deslogado.");
-        // ----------------------------
+        // Reseta o usuário visualmente para forçar novo login (ou jogar como anônimo/player1)
+        usuarioAtualId = 1;
+        document.getElementById('username').value = "";
+        alert("Fim de Jogo! Pontuação salva.");
     }
 }
 
@@ -323,6 +333,8 @@ document.addEventListener('keydown', event => {
         jogadorRotacionar(1);
     } else if (event.keyCode === 38) { // Seta Cima (Gira Direita - padrão)
         jogadorRotacionar(1);
+    } else if (event.keyCode === 32) { // --- NOVO: ESPAÇO (Hard Drop) ---
+        jogadorDropRapido();
     }
 });
 
